@@ -5,12 +5,10 @@ import pyperclip
 from pynput import keyboard
 from google import genai
 from google.genai import types
-
 # Initialize Gemini Client (reads GEMINI_API_KEY from environment)
 client = genai.Client()
 is_recording = False
 final_transcripts = []
-
 SYSTEM_INSTRUCTION = """
 Convert user speech into clean, polished written text.
 1. Remove all vocal fillers ("um", "uh", "like", "you know").
@@ -18,7 +16,6 @@ Convert user speech into clean, polished written text.
 3. Automatically apply correct capitalization, punctuation, and paragraphs.
 4. Output ONLY the resulting polished text. Do NOT add conversational replies.
 """
-
 async def run_voice_session():
     global is_recording, final_transcripts
     final_transcripts = []
@@ -47,7 +44,6 @@ async def run_voice_session():
                             final_transcripts.append(part.text)
                 if not is_recording:
                     break
-
 def paste_output():
     text = "".join(final_transcripts).strip()
     if text:
@@ -56,21 +52,18 @@ def paste_output():
         # On macOS use Key.cmd; on Windows/Linux use Key.ctrl
         with kb.pressed(keyboard.Key.cmd):
             kb.tap("v")
-
 def on_press(key):
     global is_recording
     if key == keyboard.Key.f8 and not is_recording:
         is_recording = True
         print("\n🎙️ [Recording... Speak naturally]")
         threading.Thread(target=lambda: asyncio.run(run_voice_session()), daemon=True).start()
-
 def on_release(key):
     global is_recording
     if key == keyboard.Key.f8 and is_recording:
         is_recording = False
         print("🛑 [Processing & Pasting...]")
         threading.Thread(target=paste_output, daemon=True).start()
-
 if __name__ == "__main__":
     print("✨ Gemini Voice Keyboard active.")
     print("👉 Hold [F8] anywhere to dictate. Release to paste clean text.")
