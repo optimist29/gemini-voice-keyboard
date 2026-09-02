@@ -40,7 +40,7 @@ def process_and_paste():
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.7-flash",
             contents=[
                 types.Part.from_bytes(data=wav_bytes, mime_type="audio/wav"),
                 SYSTEM_INSTRUCTION
